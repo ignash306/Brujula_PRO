@@ -1,0 +1,2567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101820">
+<title>Brújula GPS</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #101820;
+    color: #f5f7fa;
+}
+
+.app {
+    width: min(100%, 600px);
+    margin: auto;
+    padding: 20px 16px 35px;
+}
+
+header {
+    text-align: center;
+    padding: 12px 0 18px;
+}
+
+header h1 {
+    font-size: 27px;
+    margin: 0 0 7px;
+}
+
+header p {
+    color: #9eacb9;
+    margin: 0;
+    font-size: 14px;
+}
+
+.panel {
+    background: #1b2732;
+    border: 1px solid #30404e;
+    border-radius: 16px;
+    padding: 17px;
+    margin-bottom: 15px;
+}
+
+.section-title {
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+input[type="text"],
+input[type="file"] {
+    width: 100%;
+    padding: 13px;
+    background: #101820;
+    color: white;
+    border: 1px solid #40515f;
+    border-radius: 9px;
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
+input[type="file"] {
+    font-size: 13px;
+}
+
+button {
+    border: 0;
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    min-height: 46px;
+}
+
+button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.primary {
+    background: #17b978;
+    color: #061b12;
+    width: 100%;
+}
+
+.secondary {
+    background: #344554;
+    color: white;
+    width: 100%;
+}
+
+.actions {
+    display: flex;
+    gap: 9px;
+}
+
+.actions button {
+    flex: 1;
+}
+
+#message {
+    font-size: 13px;
+    color: #b5c2cd;
+    line-height: 1.5;
+    margin-top: 9px;
+    overflow-wrap: anywhere;
+}
+
+.compass-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0 8px;
+}
+
+.compass {
+    width: min(76vw, 320px);
+    aspect-ratio: 1;
+    position: relative;
+    border-radius: 50%;
+    background:
+        radial-gradient(
+            circle,
+            #243542 0%,
+            #192630 68%,
+            #101820 69%
+        );
+    border: 2px solid #40515f;
+    box-shadow:
+        0 0 0 8px #1b2732,
+        0 0 0 9px #30404e;
+}
+
+.compass::before,
+.compass::after {
+    content: "";
+    position: absolute;
+    background: #344754;
+}
+
+.compass::before {
+    width: 1px;
+    height: 88%;
+    left: 50%;
+    top: 6%;
+}
+
+.compass::after {
+    height: 1px;
+    width: 88%;
+    top: 50%;
+    left: 6%;
+}
+
+.direction {
+    position: absolute;
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 2;
+}
+
+.north {
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ff6b6b;
+}
+
+.south {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.east {
+    right: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.west {
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.arrow {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(0deg);
+    transition: transform .25s linear;
+}
+
+.arrow svg {
+    width: 43%;
+    height: 63%;
+    overflow: visible;
+    filter: drop-shadow(0 3px 6px #0008);
+}
+
+.center-dot {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #f7fafc;
+    border: 3px solid #17b978;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+}
+
+#compassState {
+    margin-top: 24px;
+    font-size: 13px;
+    text-align: center;
+    color: #aebbc6;
+}
+
+.destination {
+    text-align: center;
+    font-size: 14px;
+    color: #b8c5cf;
+    overflow-wrap: anywhere;
+}
+
+.destination strong {
+    display: block;
+    color: white;
+    font-size: 18px;
+    margin-top: 5px;
+}
+
+.metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.metric {
+    background: #101820;
+    border-radius: 12px;
+    padding: 14px 8px;
+    text-align: center;
+    min-width: 0;
+}
+
+.metric span {
+    display: block;
+    color: #9eacb9;
+    font-size: 12px;
+    margin-bottom: 7px;
+}
+
+.metric strong {
+    font-size: clamp(20px, 6vw, 27px);
+    overflow-wrap: anywhere;
+}
+
+.unit {
+    font-size: 12px;
+    color: #9eacb9;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #77838d;
+    margin-right: 7px;
+}
+
+.good {
+    background: #17b978;
+}
+
+.warn {
+    background: #f4bd50;
+}
+
+.bad {
+    background: #ed6868;
+}
+
+.small {
+    color: #9eacb9;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+footer {
+    text-align: center;
+    color: #81909d;
+    font-size: 11px;
+    padding: 8px 0;
+}
+
+@media (max-width: 360px) {
+    .app {
+        padding: 12px 12px 25px;
+    }
+
+    .panel {
+        padding: 13px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <header>
+        <h1>⌖ Brújula GPS</h1>
+        <p>Navegación por rumbo GPS hacia un destino</p>
+    </header>
+
+
+    <!-- =====================================================
+         DESTINO
+    ====================================================== -->
+
+    <section class="panel">
+
+        <div class="section-title">
+            1. Seleccionar destino
+        </div>
+
+        <label for="file" class="small">
+            Cargar archivo KML o XML
+        </label>
+
+        <input
+            type="file"
+            id="file"
+            accept=".kml,.xml,.txt"
+        >
+
+
+        <label for="mapLink" class="small">
+            O pegar enlace de Google Maps
+        </label>
+
+        <input
+            type="text"
+            id="mapLink"
+            placeholder="https://maps.google.com/?q=39.47,-0.37"
+        >
+
+        <button
+            class="secondary"
+            id="loadLink"
+        >
+            Cargar enlace
+        </button>
+
+        <div
+            id="message"
+            aria-live="polite"
+        >
+            Selecciona un archivo o introduce un enlace de Google Maps.
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         BRÚJULA
+    ====================================================== -->
+
+    <section class="panel">
+
+        <div class="section-title">
+            2. Navegación
+        </div>
+
+        <div class="compass-wrap">
+
+            <div
+                class="compass"
+                aria-label="Brújula GPS"
+            >
+
+                <span class="direction north">
+                    N
+                </span>
+
+                <span class="direction east">
+                    E
+                </span>
+
+                <span class="direction south">
+                    S
+                </span>
+
+                <span class="direction west">
+                    O
+                </span>
+
+
+                <div
+                    class="arrow"
+                    id="arrow"
+                >
+
+                    <svg
+                        viewBox="0 0 100 150"
+                        role="img"
+                        aria-label="Flecha que apunta al destino"
+                    >
+
+                        <path
+                            d="M50 4 L91 111 L50 91 L9 111 Z"
+                            fill="#17b978"
+                            stroke="#e7fff4"
+                            stroke-width="3"
+                            stroke-linejoin="round"
+                        />
+
+                        <path
+                            d="M50 4 L50 91 L9 111 Z"
+                            fill="#d7ffec"
+                            opacity=".55"
+                        />
+
+                    </svg>
+
+                </div>
+
+
+                <div class="center-dot"></div>
+
+            </div>
+
+
+            <div
+                id="compassState"
+                aria-live="polite"
+            >
+                Esperando destino y señal GPS
+            </div>
+
+        </div>
+
+
+        <div class="destination">
+
+            DESTINO
+
+            <strong id="destinationName">
+                No seleccionado
+            </strong>
+
+            <div
+                id="destinationCoords"
+                class="small"
+            >
+                --
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         DATOS GPS
+    ====================================================== -->
+
+    <section class="panel">
+
+        <div class="section-title">
+            3. Datos GPS
+        </div>
+
+
+        <div class="metrics">
+
+            <div class="metric">
+
+                <span>
+                    Distancia al destino
+                </span>
+
+                <strong id="distance">
+                    --
+                </strong>
+
+            </div>
+
+
+            <div class="metric">
+
+                <span>
+                    Velocidad GPS
+                </span>
+
+                <strong id="speed">
+                    --
+                </strong>
+
+                <div class="unit">
+                    km/h
+                </div>
+
+            </div>
+
+
+            <div class="metric">
+
+                <span>
+                    Rumbo del vehículo
+                </span>
+
+                <strong id="heading">
+                    --
+                </strong>
+
+                <div class="unit">
+                    grados
+                </div>
+
+            </div>
+
+
+            <div class="metric">
+
+                <span>
+                    Rumbo al destino
+                </span>
+
+                <strong id="bearing">
+                    --
+                </strong>
+
+                <div class="unit">
+                    grados
+                </div>
+
+            </div>
+
+
+            <div class="metric">
+
+                <span>
+                    Precisión GPS
+                </span>
+
+                <strong id="accuracy">
+                    --
+                </strong>
+
+                <div class="unit">
+                    metros
+                </div>
+
+            </div>
+
+
+            <div class="metric">
+
+                <span>
+                    Diferencia angular
+                </span>
+
+                <strong id="difference">
+                    --
+                </strong>
+
+                <div class="unit">
+                    grados
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CONTROL GPS
+    ====================================================== -->
+
+    <section class="panel">
+
+        <div class="section-title">
+            4. Control GPS
+        </div>
+
+
+        <div class="actions">
+
+            <button
+                class="primary"
+                id="start"
+            >
+                Iniciar GPS
+            </button>
+
+            <button
+                class="secondary"
+                id="stop"
+                disabled
+            >
+                Detener
+            </button>
+
+        </div>
+
+
+        <p
+            id="gpsStatus"
+            class="small"
+            aria-live="polite"
+        >
+
+            <span class="status-dot"></span>
+
+            GPS desconectado
+
+        </p>
+
+
+        <p class="small">
+
+            Para obtener un rumbo fiable, inicia la marcha
+            en una zona segura y despejada.
+
+            El rumbo se calcula mediante el desplazamiento
+            de las posiciones GPS, no mediante el magnetómetro.
+
+        </p>
+
+    </section>
+
+
+    <footer>
+
+        La navegación GPS puede presentar errores.
+        No sustituye los sistemas de navegación homologados
+        del vehículo.
+
+    </footer>
+
+</div>
+
+
+<script>
+
+"use strict";
+
+
+// ============================================================
+// CONFIGURACIÓN
+// ============================================================
+
+const MIN_SPEED = 1.5;
+// m/s ≈ 5,4 km/h
+
+const MAX_ACCURACY = 35;
+// precisión máxima aceptada
+
+const MIN_TRAVEL = 7;
+// metros mínimos entre puntos
+
+const MAX_HISTORY_AGE = 8000;
+// historial máximo en ms
+
+const MAX_HISTORY = 15;
+
+
+// ============================================================
+// ESTADO
+// ============================================================
+
+let destination = null;
+
+let watchId = null;
+
+let history = [];
+
+let currentHeading = null;
+
+let currentBearing = null;
+
+let currentDistance = null;
+
+let lastPosition = null;
+
+let currentSpeed = null;
+
+
+// ============================================================
+// ELEMENTOS HTML
+// ============================================================
+
+const $ = id => document.getElementById(id);
+
+
+// ============================================================
+// MENSAJES
+// ============================================================
+
+function message(text, error = false) {
+
+    $("message").textContent = text;
+
+    $("message").style.color =
+        error
+            ? "#ff9292"
+            : "#b5c2cd";
+}
+
+
+function gpsMessage(text, state = "") {
+
+    const el = $("gpsStatus");
+
+    el.innerHTML = "";
+
+    const dot = document.createElement("span");
+
+    dot.className =
+        "status-dot " + state;
+
+    el.append(
+        dot,
+        document.createTextNode(text)
+    );
+}
+
+
+// ============================================================
+// FUNCIONES MATEMÁTICAS
+// ============================================================
+
+function radians(deg) {
+
+    return deg * Math.PI / 180;
+
+}
+
+
+function degrees(rad) {
+
+    return rad * 180 / Math.PI;
+
+}
+
+
+function normalize(deg) {
+
+    return (
+        (deg % 360) + 360
+    ) % 360;
+
+}
+
+
+function angleDifference(target, current) {
+
+    return (
+        (target - current + 540) % 360
+    ) - 180;
+
+}
+
+
+// ============================================================
+// DISTANCIA GPS
+// ============================================================
+
+function distanceBetween(a, b) {
+
+    const R = 6371000;
+
+    const lat1 = radians(a.lat);
+
+    const lat2 = radians(b.lat);
+
+    const dLat =
+        radians(b.lat - a.lat);
+
+    const dLon =
+        radians(b.lon - a.lon);
+
+
+    const x =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1) *
+        Math.cos(lat2) *
+        Math.sin(dLon / 2) ** 2;
+
+
+    return (
+        2 *
+        R *
+        Math.atan2(
+            Math.sqrt(x),
+            Math.sqrt(1 - x)
+        )
+    );
+}
+
+
+// ============================================================
+// RUMBO ENTRE DOS PUNTOS
+// ============================================================
+
+function bearingBetween(a, b) {
+
+    const lat1 =
+        radians(a.lat);
+
+    const lat2 =
+        radians(b.lat);
+
+    const dLon =
+        radians(b.lon - a.lon);
+
+
+    const y =
+        Math.sin(dLon) *
+        Math.cos(lat2);
+
+
+    const x =
+        Math.cos(lat1) *
+        Math.sin(lat2) -
+        Math.sin(lat1) *
+        Math.cos(lat2) *
+        Math.cos(dLon);
+
+
+    return normalize(
+        degrees(
+            Math.atan2(y, x)
+        )
+    );
+}
+
+
+// ============================================================
+// FORMATEAR DISTANCIA
+// ============================================================
+
+function formatDistance(meters) {
+
+    if (!Number.isFinite(meters)) {
+        return "--";
+    }
+
+
+    if (meters < 1000) {
+
+        return (
+            Math.round(meters) +
+            " m"
+        );
+
+    }
+
+
+    return (
+        (meters / 1000).toFixed(2) +
+        " km"
+    );
+}
+
+
+// ============================================================
+// VALIDAR COORDENADAS
+// ============================================================
+
+function isValidCoordinates(lat, lon) {
+
+    return (
+
+        Number.isFinite(lat) &&
+
+        Number.isFinite(lon) &&
+
+        lat >= -90 &&
+        lat <= 90 &&
+
+        lon >= -180 &&
+        lon <= 180
+
+    );
+}
+
+
+// ============================================================
+// EXTRAER COORDENADAS DE TEXTO
+// ============================================================
+
+function extractCoordinates(text) {
+
+    if (!text) {
+        return null;
+    }
+
+
+    let decoded;
+
+    try {
+
+        decoded =
+            decodeURIComponent(
+                text.replace(/\+/g, " ")
+            );
+
+    } catch {
+
+        decoded = text;
+
+    }
+
+
+    const match =
+        decoded.match(
+            /(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/
+        );
+
+
+    if (!match) {
+        return null;
+    }
+
+
+    const first =
+        Number(match[1]);
+
+    const second =
+        Number(match[2]);
+
+
+    // Caso normal: latitud, longitud
+
+    if (
+        isValidCoordinates(
+            first,
+            second
+        )
+    ) {
+
+        return {
+            lat: first,
+            lon: second
+        };
+
+    }
+
+
+    return null;
+}
+
+
+// ============================================================
+// CARGAR DESTINO
+// ============================================================
+
+function setDestination(
+    lat,
+    lon,
+    name = "Destino"
+) {
+
+    if (
+        !isValidCoordinates(
+            lat,
+            lon
+        )
+    ) {
+
+        throw new Error(
+            "Las coordenadas no son válidas."
+        );
+
+    }
+
+
+    destination = {
+
+        lat,
+        lon,
+        name
+
+    };
+
+
+    $("destinationName")
+        .textContent = name;
+
+
+    $("destinationCoords")
+        .textContent =
+            lat.toFixed(6) +
+            ", " +
+            lon.toFixed(6);
+
+
+    message(
+        "Destino cargado correctamente."
+    );
+
+
+    updateNavigation();
+}
+
+
+// ============================================================
+// PARSER GOOGLE MAPS
+// ============================================================
+
+function parseGoogleLink(value) {
+
+    value = value.trim();
+
+
+    if (!value) {
+
+        throw new Error(
+            "Introduce un enlace de Google Maps."
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // COORDENADAS DIRECTAS
+    // --------------------------------------------------------
+
+    const direct =
+        value.match(
+            /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/
+        );
+
+
+    if (direct) {
+
+        const lat =
+            Number(direct[1]);
+
+        const lon =
+            Number(direct[2]);
+
+
+        if (
+            isValidCoordinates(
+                lat,
+                lon
+            )
+        ) {
+
+            return {
+
+                lat,
+                lon,
+
+                name: "Coordenadas"
+
+            };
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // CREAR URL
+    // --------------------------------------------------------
+
+    let url;
+
+
+    try {
+
+        if (
+            !/^https?:\/\//i.test(value)
+        ) {
+
+            value =
+                "https://" + value;
+
+        }
+
+
+        url = new URL(value);
+
+    } catch {
+
+        throw new Error(
+            "El enlace no es una URL válida."
+        );
+
+    }
+
+
+    let fullURL;
+
+    try {
+
+        fullURL =
+            decodeURIComponent(
+                url.href
+            );
+
+    } catch {
+
+        fullURL = url.href;
+
+    }
+
+
+    // --------------------------------------------------------
+    // ?q=LAT,LON
+    // --------------------------------------------------------
+
+    const q =
+        url.searchParams.get("q");
+
+
+    if (q) {
+
+        const coords =
+            extractCoordinates(q);
+
+
+        if (coords) {
+
+            return {
+
+                ...coords,
+
+                name: "Google Maps"
+
+            };
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // ?query=LAT,LON
+    // --------------------------------------------------------
+
+    const query =
+        url.searchParams.get("query");
+
+
+    if (query) {
+
+        const coords =
+            extractCoordinates(query);
+
+
+        if (coords) {
+
+            return {
+
+                ...coords,
+
+                name: "Google Maps"
+
+            };
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // ?ll=LAT,LON
+    // --------------------------------------------------------
+
+    const ll =
+        url.searchParams.get("ll");
+
+
+    if (ll) {
+
+        const coords =
+            extractCoordinates(ll);
+
+
+        if (coords) {
+
+            return {
+
+                ...coords,
+
+                name: "Google Maps"
+
+            };
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // ?destination=LAT,LON
+    // --------------------------------------------------------
+
+    const destinationParam =
+        url.searchParams.get(
+            "destination"
+        );
+
+
+    if (destinationParam) {
+
+        const coords =
+            extractCoordinates(
+                destinationParam
+            );
+
+
+        if (coords) {
+
+            return {
+
+                ...coords,
+
+                name: "Google Maps"
+
+            };
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // /@LAT,LON,ZOOM
+    // --------------------------------------------------------
+
+    let match =
+        fullURL.match(
+            /@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)(?:,[^/?#]*)?/i
+        );
+
+
+    if (match) {
+
+        const lat =
+            Number(match[1]);
+
+        const lon =
+            Number(match[2]);
+
+
+        if (
+            isValidCoordinates(
+                lat,
+                lon
+            )
+        ) {
+
+            return {
+
+                lat,
+                lon,
+
+                name: "Google Maps"
+
+            };
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // /place/NOMBRE/@LAT,LON
+    // --------------------------------------------------------
+
+    match =
+        fullURL.match(
+            /\/place\/[^/]*\/@?(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i
+        );
+
+
+    if (match) {
+
+        const lat =
+            Number(match[1]);
+
+        const lon =
+            Number(match[2]);
+
+
+        if (
+            isValidCoordinates(
+                lat,
+                lon
+            )
+        ) {
+
+            return {
+
+                lat,
+                lon,
+
+                name: "Google Maps"
+
+            };
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // !3dLAT!4dLON
+    // --------------------------------------------------------
+
+    match =
+        fullURL.match(
+            /!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/i
+        );
+
+
+    if (match) {
+
+        const lat =
+            Number(match[1]);
+
+        const lon =
+            Number(match[2]);
+
+
+        if (
+            isValidCoordinates(
+                lat,
+                lon
+            )
+        ) {
+
+            return {
+
+                lat,
+                lon,
+
+                name: "Google Maps"
+
+            };
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // BUSCAR CUALQUIER PAR DE COORDENADAS
+    // --------------------------------------------------------
+
+    const genericMatches =
+        fullURL.match(
+            /(-?\d{1,3}\.\d{4,})\s*[,;%2C]\s*(-?\d{1,3}\.\d{4,})/gi
+        );
+
+
+    if (genericMatches) {
+
+        for (
+            const item of genericMatches
+        ) {
+
+            const coords =
+                extractCoordinates(item);
+
+
+            if (coords) {
+
+                return {
+
+                    ...coords,
+
+                    name: "Google Maps"
+
+                };
+
+            }
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // NO ENCONTRADO
+    // --------------------------------------------------------
+
+    throw new Error(
+
+        "No se han encontrado coordenadas " +
+        "en este enlace de Google Maps."
+
+    );
+}
+
+
+// ============================================================
+// BOTÓN GOOGLE MAPS
+// ============================================================
+
+$("loadLink")
+    .addEventListener(
+        "click",
+        () => {
+
+            const value =
+                $("mapLink")
+                    .value
+                    .trim();
+
+
+            if (!value) {
+
+                message(
+                    "Pega primero un enlace de Google Maps.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                const result =
+                    parseGoogleLink(
+                        value
+                    );
+
+
+                setDestination(
+                    result.lat,
+                    result.lon,
+                    result.name
+                );
+
+
+                message(
+
+                    "Destino encontrado: " +
+                    result.lat.toFixed(6) +
+                    ", " +
+                    result.lon.toFixed(6)
+
+                );
+
+
+            } catch (error) {
+
+                console.error(error);
+
+
+                message(
+                    error.message,
+                    true
+                );
+
+            }
+
+        }
+    );
+
+
+// ============================================================
+// IMPORTAR KML / XML
+// ============================================================
+
+$("file")
+    .addEventListener(
+        "change",
+        async event => {
+
+            const file =
+                event.target.files[0];
+
+
+            if (!file) {
+                return;
+            }
+
+
+            try {
+
+                const content =
+                    await file.text();
+
+
+                const xml =
+                    new DOMParser()
+                        .parseFromString(
+                            content,
+                            "application/xml"
+                        );
+
+
+                if (
+                    xml.querySelector(
+                        "parsererror"
+                    )
+                ) {
+
+                    throw new Error(
+                        "El archivo XML no es válido."
+                    );
+
+                }
+
+
+                let coords = null;
+
+                let name =
+                    file.name;
+
+
+                // ------------------------------------------------
+                // KML <coordinates>
+                // ------------------------------------------------
+
+                const coordinateNodes =
+                    xml.getElementsByTagNameNS(
+                        "*",
+                        "coordinates"
+                    );
+
+
+                for (
+                    const node
+                    of coordinateNodes
+                ) {
+
+                    const parts =
+                        node.textContent
+                            .trim()
+                            .split(/\s+/);
+
+
+                    if (!parts.length) {
+                        continue;
+                    }
+
+
+                    const values =
+                        parts[0]
+                            .split(",");
+
+
+                    if (
+                        values.length >= 2
+                    ) {
+
+                        const lon =
+                            Number(values[0]);
+
+                        const lat =
+                            Number(values[1]);
+
+
+                        if (
+                            isValidCoordinates(
+                                lat,
+                                lon
+                            )
+                        ) {
+
+                            coords = {
+
+                                lat,
+                                lon
+
+                            };
+
+                            break;
+
+                        }
+
+                    }
+
+                }
+
+
+                // ------------------------------------------------
+                // XML <lat> / <lon>
+                // ------------------------------------------------
+
+                if (!coords) {
+
+                    const latNode =
+                        xml.getElementsByTagNameNS(
+                            "*",
+                            "lat"
+                        )[0];
+
+
+                    const lonNode =
+                        xml.getElementsByTagNameNS(
+                            "*",
+                            "lon"
+                        )[0] ||
+                        xml.getElementsByTagNameNS(
+                            "*",
+                            "lng"
+                        )[0];
+
+
+                    if (
+                        latNode &&
+                        lonNode
+                    ) {
+
+                        coords = {
+
+                            lat:
+                                Number(
+                                    latNode
+                                        .textContent
+                                        .trim()
+                                ),
+
+                            lon:
+                                Number(
+                                    lonNode
+                                        .textContent
+                                        .trim()
+                                )
+
+                        };
+
+                    }
+
+                }
+
+
+                // ------------------------------------------------
+                // BUSCAR COORDENADAS EN TEXTO
+                // ------------------------------------------------
+
+                if (!coords) {
+
+                    const allText =
+                        xml.documentElement
+                            .textContent;
+
+
+                    const match =
+                        allText.match(
+                            /(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,2}\.\d+)/
+                        );
+
+
+                    if (match) {
+
+                        const first =
+                            Number(match[1]);
+
+                        const second =
+                            Number(match[2]);
+
+
+                        // KML normalmente es lon,lat
+
+                        if (
+                            isValidCoordinates(
+                                second,
+                                first
+                            )
+                        ) {
+
+                            coords = {
+
+                                lon: first,
+                                lat: second
+
+                            };
+
+                        }
+
+                    }
+
+                }
+
+
+                if (!coords) {
+
+                    throw new Error(
+
+                        "No se han encontrado " +
+                        "coordenadas reconocibles " +
+                        "en el archivo."
+
+                    );
+
+                }
+
+
+                // ------------------------------------------------
+                // NOMBRE
+                // ------------------------------------------------
+
+                const names =
+                    xml.getElementsByTagNameNS(
+                        "*",
+                        "name"
+                    );
+
+
+                if (
+                    names.length &&
+                    names[0]
+                        .textContent
+                        .trim()
+                ) {
+
+                    name =
+                        names[0]
+                            .textContent
+                            .trim();
+
+                }
+
+
+                setDestination(
+                    coords.lat,
+                    coords.lon,
+                    name
+                );
+
+
+            } catch (err) {
+
+                console.error(err);
+
+                message(
+                    err.message,
+                    true
+                );
+
+            }
+
+        }
+    );
+
+
+// ============================================================
+// CÁLCULO DEL RUMBO GPS
+// ============================================================
+
+function calculateGPSHeading(
+    position
+) {
+
+    const now =
+        position.timestamp;
+
+
+    const point = {
+
+        lat:
+            position.coords.latitude,
+
+        lon:
+            position.coords.longitude,
+
+        accuracy:
+            position.coords.accuracy,
+
+        time:
+            now
+
+    };
+
+
+    history.push(point);
+
+
+    history =
+        history
+            .filter(
+                p =>
+                    now - p.time <=
+                    MAX_HISTORY_AGE
+            )
+            .slice(
+                -MAX_HISTORY
+            );
+
+
+    if (
+        history.length < 2
+    ) {
+
+        return null;
+
+    }
+
+
+    const latest =
+        history[
+            history.length - 1
+        ];
+
+
+    let anchor = null;
+
+
+    for (
+        let i =
+            history.length - 2;
+
+        i >= 0;
+
+        i--
+    ) {
+
+        const candidate =
+            history[i];
+
+
+        const elapsed =
+            latest.time -
+            candidate.time;
+
+
+        const travelled =
+            distanceBetween(
+                candidate,
+                latest
+            );
+
+
+        const accuracyLimit =
+            Math.max(
+
+                MIN_TRAVEL,
+
+                Math.min(
+                    20,
+                    (
+                        latest.accuracy +
+                        candidate.accuracy
+                    ) * 0.65
+                )
+
+            );
+
+
+        if (
+            elapsed >= 1200 &&
+            travelled >= accuracyLimit
+        ) {
+
+            anchor =
+                candidate;
+
+            break;
+
+        }
+
+    }
+
+
+    if (!anchor) {
+        return null;
+    }
+
+
+    const seconds =
+        (
+            latest.time -
+            anchor.time
+        ) / 1000;
+
+
+    const travelled =
+        distanceBetween(
+            anchor,
+            latest
+        );
+
+
+    const estimatedSpeed =
+        travelled / seconds;
+
+
+    if (
+
+        latest.accuracy >
+        MAX_ACCURACY ||
+
+        anchor.accuracy >
+        MAX_ACCURACY ||
+
+        estimatedSpeed <
+        MIN_SPEED
+
+    ) {
+
+        return null;
+
+    }
+
+
+    return bearingBetween(
+        anchor,
+        latest
+    );
+}
+
+
+// ============================================================
+// SUAVIZAR RUMBO
+// ============================================================
+
+function smoothHeading(
+    oldHeading,
+    newHeading
+) {
+
+    if (
+        oldHeading === null
+    ) {
+
+        return newHeading;
+
+    }
+
+
+    const difference =
+        angleDifference(
+            newHeading,
+            oldHeading
+        );
+
+
+    const alpha = 0.28;
+
+
+    return normalize(
+
+        oldHeading +
+        difference * alpha
+
+    );
+}
+
+
+// ============================================================
+// ACTUALIZAR NAVEGACIÓN
+// ============================================================
+
+function updateNavigation() {
+
+    if (
+        !destination ||
+        !lastPosition
+    ) {
+
+        return;
+
+    }
+
+
+    const position =
+        lastPosition;
+
+
+    const current = {
+
+        lat:
+            position.coords.latitude,
+
+        lon:
+            position.coords.longitude
+
+    };
+
+
+    // --------------------------------------------------------
+    // DISTANCIA
+    // --------------------------------------------------------
+
+    currentDistance =
+        distanceBetween(
+            current,
+            destination
+        );
+
+
+    // --------------------------------------------------------
+    // RUMBO AL DESTINO
+    // --------------------------------------------------------
+
+    currentBearing =
+        bearingBetween(
+            current,
+            destination
+        );
+
+
+    $("distance")
+        .textContent =
+            formatDistance(
+                currentDistance
+            );
+
+
+    $("bearing")
+        .textContent =
+            Math.round(
+                currentBearing
+            ) + "°";
+
+
+    // --------------------------------------------------------
+    // RUMBO DEL VEHÍCULO
+    // --------------------------------------------------------
+
+    if (
+        currentHeading !== null
+    ) {
+
+        const difference =
+            angleDifference(
+                currentBearing,
+                currentHeading
+            );
+
+
+        $("difference")
+            .textContent =
+
+                (
+                    difference > 0
+                        ? "+"
+                        : ""
+                ) +
+
+                Math.round(
+                    difference
+                ) +
+
+                "°";
+
+
+        // La flecha apunta hacia
+        // el destino respecto al coche.
+
+        $("arrow")
+            .style.transform =
+                "rotate(" +
+                difference +
+                "deg)";
+
+
+        // ----------------------------------------------------
+        // TEXTO
+        // ----------------------------------------------------
+
+        if (
+            Math.abs(difference) <= 5
+        ) {
+
+            $("compassState")
+                .textContent =
+                    "En dirección al destino";
+
+        }
+
+        else if (
+            difference > 0
+        ) {
+
+            $("compassState")
+                .textContent =
+                    "Girar a la derecha";
+
+        }
+
+        else {
+
+            $("compassState")
+                .textContent =
+                    "Girar a la izquierda";
+
+        }
+
+    }
+
+    else {
+
+        $("difference")
+            .textContent =
+                "--";
+
+
+        $("compassState")
+            .textContent =
+                "Esperando movimiento para calcular el rumbo GPS";
+
+    }
+
+}
+
+
+// ============================================================
+// GPS
+// ============================================================
+
+function onGPS(position) {
+
+    lastPosition =
+        position;
+
+
+    const coords =
+        position.coords;
+
+
+    const accuracy =
+        coords.accuracy;
+
+
+    const speed =
+        coords.speed;
+
+
+    // --------------------------------------------------------
+    // PRECISIÓN
+    // --------------------------------------------------------
+
+    $("accuracy")
+        .textContent =
+
+            Number.isFinite(
+                accuracy
+            )
+
+                ? Math.round(
+                    accuracy
+                ) + " m"
+
+                : "--";
+
+
+    // --------------------------------------------------------
+    // VELOCIDAD
+    // --------------------------------------------------------
+
+    currentSpeed =
+
+        Number.isFinite(
+            speed
+        ) && speed >= 0
+
+            ? speed
+
+            : null;
+
+
+    if (
+        currentSpeed !== null
+    ) {
+
+        $("speed")
+            .textContent =
+                (
+                    currentSpeed *
+                    3.6
+                ).toFixed(1);
+
+    }
+
+    else {
+
+        $("speed")
+            .textContent =
+                "--";
+
+    }
+
+
+    // --------------------------------------------------------
+    // PRECISIÓN DEMASIADO MALA
+    // --------------------------------------------------------
+
+    if (
+        accuracy >
+        MAX_ACCURACY
+    ) {
+
+        gpsMessage(
+            "Señal GPS débil. Buscando mayor precisión.",
+            "warn"
+        );
+
+
+        $("heading")
+            .textContent =
+                "--";
+
+
+        currentHeading =
+            null;
+
+
+        updateNavigation();
+
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // CALCULAR RUMBO
+    // --------------------------------------------------------
+
+    const rawHeading =
+        calculateGPSHeading(
+            position
+        );
+
+
+    if (
+        rawHeading !== null
+    ) {
+
+        currentHeading =
+            smoothHeading(
+                currentHeading,
+                rawHeading
+            );
+
+
+        $("heading")
+            .textContent =
+                Math.round(
+                    currentHeading
+                ) + "°";
+
+
+        gpsMessage(
+            "GPS activo · Rumbo calculado",
+            "good"
+        );
+
+    }
+
+    else {
+
+        if (
+
+            currentSpeed !== null &&
+            currentSpeed <
+            MIN_SPEED
+
+        ) {
+
+            gpsMessage(
+
+                "GPS activo · Velocidad insuficiente para calcular rumbo",
+
+                "warn"
+
+            );
+
+        }
+
+        else {
+
+            gpsMessage(
+                "GPS activo · Calculando rumbo",
+                "warn"
+            );
+
+        }
+
+    }
+
+
+    updateNavigation();
+}
+
+
+// ============================================================
+// ERROR GPS
+// ============================================================
+
+function onGPSError(error) {
+
+    const errors = {
+
+        1:
+            "Permiso de ubicación denegado.",
+
+        2:
+            "No se ha podido obtener la posición.",
+
+        3:
+            "Tiempo de espera agotado."
+
+    };
+
+
+    gpsMessage(
+
+        errors[error.code] ||
+        "Error GPS.",
+
+        "bad"
+
+    );
+
+
+    $("compassState")
+        .textContent =
+            "GPS no disponible";
+}
+
+
+// ============================================================
+// INICIAR GPS
+// ============================================================
+
+function startGPS() {
+
+    if (
+        !("geolocation" in navigator)
+    ) {
+
+        gpsMessage(
+            "Este navegador no admite geolocalización.",
+            "bad"
+        );
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // COMPROBAR SEGURIDAD
+    // --------------------------------------------------------
+
+    if (
+
+        location.protocol !== "https:" &&
+
+        location.hostname !==
+            "localhost" &&
+
+        location.hostname !==
+            "127.0.0.1"
+
+    ) {
+
+        gpsMessage(
+
+            "Se necesita HTTPS o localhost para utilizar GPS.",
+
+            "bad"
+
+        );
+
+        return;
+
+    }
+
+
+    if (
+        watchId !== null
+    ) {
+
+        return;
+
+    }
+
+
+    history = [];
+
+    currentHeading = null;
+
+    lastPosition = null;
+
+
+    $("heading")
+        .textContent =
+            "--";
+
+
+    $("difference")
+        .textContent =
+            "--";
+
+
+    $("arrow")
+        .style.transform =
+            "rotate(0deg)";
+
+
+    watchId =
+        navigator.geolocation.watchPosition(
+
+            onGPS,
+
+            onGPSError,
+
+            {
+
+                enableHighAccuracy:
+                    true,
+
+                maximumAge:
+                    0,
+
+                timeout:
+                    20000
+
+            }
+
+        );
+
+
+    $("start")
+        .disabled =
+            true;
+
+
+    $("stop")
+        .disabled =
+            false;
+
+
+    gpsMessage(
+        "Solicitando señal GPS...",
+        "warn"
+    );
+}
+
+
+// ============================================================
+// DETENER GPS
+// ============================================================
+
+function stopGPS() {
+
+    if (
+        watchId !== null
+    ) {
+
+        navigator.geolocation
+            .clearWatch(
+                watchId
+            );
+
+        watchId =
+            null;
+
+    }
+
+
+    history = [];
+
+    currentHeading =
+        null;
+
+    lastPosition =
+        null;
+
+
+    $("start")
+        .disabled =
+            false;
+
+
+    $("stop")
+        .disabled =
+            true;
+
+
+    $("heading")
+        .textContent =
+            "--";
+
+
+    $("difference")
+        .textContent =
+            "--";
+
+
+    $("speed")
+        .textContent =
+            "--";
+
+
+    $("arrow")
+        .style.transform =
+            "rotate(0deg)";
+
+
+    $("compassState")
+        .textContent =
+            "GPS detenido";
+
+
+    gpsMessage(
+        "GPS desconectado"
+    );
+}
+
+
+// ============================================================
+// BOTONES GPS
+// ============================================================
+
+$("start")
+    .addEventListener(
+        "click",
+        startGPS
+    );
+
+
+$("stop")
+    .addEventListener(
+        "click",
+        stopGPS
+    );
+
+
+// ============================================================
+// AL CERRAR LA PÁGINA
+// ============================================================
+
+window.addEventListener(
+    "pagehide",
+    stopGPS
+);
+
+</script>
+
+</body>
+</html>
