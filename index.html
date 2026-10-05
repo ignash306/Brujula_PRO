@@ -1,7 +1,9 @@
 ```html
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
 <meta charset="UTF-8">
 
 <meta name="viewport"
@@ -16,391 +18,1084 @@
 
 <style>
 
+/* =========================================================
+   GENERAL
+========================================================= */
+
 * {
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
+
     margin: 0;
     padding: 0;
+
     width: 100%;
     min-height: 100%;
+
     background: #101318;
+
     color: #f2f4f7;
-    font-family: Arial, Helvetica, sans-serif;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 }
 
 body {
-    padding-bottom: 30px;
+
+    padding-bottom: 25px;
+
 }
 
 main {
+
     width: 100%;
     max-width: 650px;
+
     margin: auto;
-    padding: 14px;
+
+    padding: 10px;
+
 }
 
 .card {
+
     background: #191e26;
+
     border-radius: 18px;
-    padding: 16px;
-    margin-bottom: 14px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+
+    padding: 15px;
+
+    margin-bottom: 12px;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,0.25);
+
 }
 
 h1 {
+
     margin: 0 0 5px;
-    font-size: 25px;
+
+    font-size: 24px;
+
 }
 
 h2 {
-    margin: 0 0 12px;
+
+    margin: 0 0 10px;
+
     font-size: 18px;
+
 }
 
 .muted {
+
     color: #9ca6b4;
+
     font-size: 13px;
+
     line-height: 1.4;
+
 }
 
-/* DESTINO */
+
+/* =========================================================
+   DESTINO PLEGABLE
+========================================================= */
+
+.destination-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    cursor: pointer;
+
+    user-select: none;
+
+    min-height: 42px;
+
+}
+
+.destination-title {
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+}
+
+.destination-arrow {
+
+    font-size: 20px;
+
+    transition:
+        transform 0.2s ease;
+
+}
+
+.destination-content {
+
+    display: none;
+
+    margin-top: 14px;
+
+}
+
+.destination-content.open {
+
+    display: block;
+
+}
+
+.destination-arrow.open {
+
+    transform:
+        rotate(180deg);
+
+}
 
 label {
+
     display: block;
+
     margin-bottom: 6px;
+
     font-size: 14px;
+
     color: #cbd2dc;
+
 }
 
 input[type="text"] {
+
     width: 100%;
+
     height: 48px;
+
     padding: 0 13px;
+
     border-radius: 11px;
+
     border: 1px solid #3b4554;
+
     background: #0f1319;
+
     color: white;
+
     font-size: 16px;
+
     outline: none;
+
 }
 
 input[type="text"]:focus {
+
     border-color: #4285f4;
+
 }
 
 button {
+
     border: 0;
+
     border-radius: 12px;
+
     padding: 13px 16px;
+
     font-size: 16px;
+
     font-weight: bold;
+
     background: #303947;
+
     color: white;
+
     cursor: pointer;
+
     touch-action: manipulation;
+
 }
 
 button:active {
+
     transform: scale(0.98);
+
 }
 
 button.primary {
-    background: #2563eb;
-}
 
-button.green {
-    background: #16803c;
+    background: #2563eb;
+
 }
 
 button.red {
+
     background: #b42318;
+
 }
 
 .row {
+
     display: flex;
+
     gap: 8px;
+
     flex-wrap: wrap;
-    margin-top: 10px;
+
+    margin-top: 9px;
+
 }
 
 .row button {
+
     flex: 1;
+
     min-width: 120px;
+
 }
 
 .destination-status {
+
     margin-top: 10px;
-    padding: 11px;
+
+    padding: 10px;
+
     border-radius: 10px;
+
     background: #11161d;
+
     color: #cbd2dc;
-    font-size: 14px;
+
+    font-size: 13px;
+
     word-break: break-word;
+
 }
 
-/* BRÚJULA */
+.file-button {
+
+    display: block;
+
+    width: 100%;
+
+    text-align: center;
+
+    padding: 13px 16px;
+
+    border-radius: 12px;
+
+    background: #303947;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+input[type="file"] {
+
+    display: none;
+
+}
+
+
+/* =========================================================
+   BRÚJULA
+========================================================= */
+
+.compass-container {
+
+    position: relative;
+
+    width: min(88vw, 350px);
+
+    height: min(88vw, 350px);
+
+    max-width: 350px;
+
+    max-height: 350px;
+
+    margin: 10px auto 18px;
+
+}
+
+
+/*
+    Círculo exterior
+*/
 
 .compass {
-    position: relative;
-    width: min(80vw, 330px);
-    height: min(80vw, 330px);
-    max-width: 330px;
-    max-height: 330px;
-    margin: 15px auto 20px;
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
 
     border-radius: 50%;
-    border: 5px solid #3b4554;
+
+    border: 4px solid #596575;
 
     background:
         radial-gradient(
             circle,
-            #202733 0%,
-            #161b23 65%,
-            #11151c 100%
+            #252c37 0%,
+            #171c24 65%,
+            #10141b 100%
         );
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
+
 }
 
-.compass-arrow {
-    font-size: 115px;
-    line-height: 1;
-    color: #ff3b30;
-    transition: transform 0.25s ease-out;
-    user-select: none;
-}
 
-.north {
+/*
+    Disco de la brújula.
+
+    Este elemento gira para representar
+    el rumbo real del vehículo.
+*/
+
+.compass-dial {
+
     position: absolute;
-    top: 8px;
+
+    width: 100%;
+    height: 100%;
+
+    left: 0;
+    top: 0;
+
+    transition:
+        transform 0.35s ease-out;
+
+}
+
+
+/* =========================================================
+   MARCAS DE LA BRÚJULA
+========================================================= */
+
+.compass-letter {
+
+    position: absolute;
+
+    font-weight: bold;
+
+    font-size: 22px;
+
+    transform:
+        translate(-50%, -50%);
+
+}
+
+.compass-n {
+
     left: 50%;
-    transform: translateX(-50%);
-    color: #ff3b30;
-    font-weight: bold;
-    font-size: 20px;
+    top: 9%;
+
+    color: #ff453a;
+
 }
 
-.south {
-    position: absolute;
-    bottom: 8px;
+.compass-e {
+
+    left: 91%;
+    top: 50%;
+
+    color: #e8edf4;
+
+}
+
+.compass-s {
+
     left: 50%;
-    transform: translateX(-50%);
-    color: #cbd2dc;
-    font-weight: bold;
-    font-size: 18px;
+    top: 91%;
+
+    color: #e8edf4;
+
 }
 
-.east {
-    position: absolute;
-    right: 10px;
+.compass-w {
+
+    left: 9%;
     top: 50%;
-    transform: translateY(-50%);
-    color: #cbd2dc;
-    font-weight: bold;
-    font-size: 18px;
+
+    color: #e8edf4;
+
 }
 
-.west {
+
+/* =========================================================
+   MARCAS INTERMEDIAS
+========================================================= */
+
+.tick {
+
     position: absolute;
-    left: 10px;
+
+    left: 50%;
     top: 50%;
-    transform: translateY(-50%);
-    color: #cbd2dc;
-    font-weight: bold;
-    font-size: 18px;
+
+    width: 2px;
+    height: 10px;
+
+    background: #8792a1;
+
+    transform-origin:
+        50% 0;
+
 }
 
-/* DATOS */
+
+/* =========================================================
+   DIRECCIÓN DEL DESTINO
+========================================================= */
+
+/*
+    Flecha roja.
+
+    Su punta indica el destino.
+
+    La flecha gira respecto al vehículo.
+*/
+
+.destination-pointer {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 8px;
+    height: 43%;
+
+    transform:
+        translate(-50%, -100%)
+        rotate(0deg);
+
+    transform-origin:
+        50% 100%;
+
+    transition:
+        transform 0.3s ease-out;
+
+    z-index: 10;
+
+}
+
+
+/*
+    Punta de la flecha
+*/
+
+.destination-pointer::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: -2px;
+
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    width: 0;
+    height: 0;
+
+    border-left:
+        16px solid transparent;
+
+    border-right:
+        16px solid transparent;
+
+    border-bottom:
+        32px solid #ff453a;
+
+}
+
+
+/*
+    Línea de la flecha
+*/
+
+.destination-pointer::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 25px;
+
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    width: 7px;
+
+    height: calc(100% - 25px);
+
+    border-radius: 5px;
+
+    background: #ff453a;
+
+}
+
+
+/* =========================================================
+   VEHÍCULO
+========================================================= */
+
+.vehicle {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 46px;
+    height: 72px;
+
+    transform:
+        translate(-50%, -50%);
+
+    z-index: 20;
+
+}
+
+
+/*
+    Cuerpo del vehículo
+*/
+
+.vehicle-body {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 30px;
+    height: 55px;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 12px 12px 9px 9px;
+
+    background: #e9eef5;
+
+    border: 2px solid #11161d;
+
+}
+
+
+/*
+    Parte delantera del coche
+*/
+
+.vehicle-front {
+
+    position: absolute;
+
+    left: 50%;
+    top: 2px;
+
+    transform:
+        translateX(-50%);
+
+    width: 0;
+    height: 0;
+
+    border-left:
+        10px solid transparent;
+
+    border-right:
+        10px solid transparent;
+
+    border-bottom:
+        18px solid #e9eef5;
+
+}
+
+
+/*
+    Ventanillas
+*/
+
+.vehicle-window {
+
+    position: absolute;
+
+    left: 50%;
+    top: 13px;
+
+    transform:
+        translateX(-50%);
+
+    width: 17px;
+    height: 13px;
+
+    border-radius: 4px;
+
+    background: #4d5969;
+
+}
+
+
+/*
+    Punto central
+*/
+
+.vehicle-center {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 10px;
+    height: 10px;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background: #2563eb;
+
+    border: 2px solid white;
+
+}
+
+
+/* =========================================================
+   TEXTO DE DIRECCIÓN
+========================================================= */
+
+.direction-label {
+
+    text-align: center;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    margin-top: 5px;
+
+}
+
+.direction-subtitle {
+
+    text-align: center;
+
+    color: #9ca6b4;
+
+    font-size: 12px;
+
+    margin-top: 3px;
+
+}
+
+
+/* =========================================================
+   DATOS
+========================================================= */
 
 .grid {
+
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 9px;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 8px;
+
 }
 
 .metric {
+
     background: #11161d;
-    padding: 12px;
+
+    padding: 11px;
+
     border-radius: 12px;
+
 }
 
 .metric-title {
+
     color: #9ca6b4;
+
     font-size: 12px;
+
 }
 
 .metric-value {
+
     display: block;
+
     margin-top: 4px;
-    font-size: 20px;
+
+    font-size: 19px;
+
     font-weight: bold;
+
 }
 
 .status {
-    padding: 11px;
+
+    padding: 10px;
+
     border-radius: 10px;
+
     background: #11161d;
-    margin-top: 12px;
-    font-size: 14px;
+
+    margin-top: 10px;
+
+    font-size: 13px;
+
     color: #cbd2dc;
+
     word-break: break-word;
+
 }
+
+
+/* =========================================================
+   INFORMACIÓN
+========================================================= */
 
 .info {
+
     color: #9ca6b4;
+
     font-size: 12px;
+
     line-height: 1.5;
-    margin-top: 10px;
+
 }
 
-.file-button {
-    display: inline-block;
-    width: 100%;
-    text-align: center;
-    padding: 13px 16px;
-    border-radius: 12px;
-    background: #303947;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-}
 
-input[type="file"] {
-    display: none;
-}
+/* =========================================================
+   MÓVIL
+========================================================= */
 
 @media (max-width: 420px) {
 
     main {
-        padding: 10px;
+
+        padding: 8px;
+
     }
 
     .card {
+
         padding: 13px;
+
     }
 
-    .compass {
-        width: 75vw;
-        height: 75vw;
+    .compass-container {
+
+        width: 86vw;
+
+        height: 86vw;
+
     }
 
-    .compass-arrow {
-        font-size: 95px;
+    .grid {
+
+        gap: 7px;
+
+    }
+
+    .metric-value {
+
+        font-size: 18px;
+
     }
 
 }
 
 </style>
+
 </head>
+
 
 <body>
 
+
 <main>
 
-<!-- CABECERA -->
+
+<!-- =====================================================
+     CABECERA
+====================================================== -->
 
 <div class="card">
 
     <h1>🧭 Brújula GPS</h1>
 
     <div class="muted">
+
         Rumbo calculado mediante GPS.
-        No utiliza la brújula magnética del teléfono.
+        No utiliza el magnetómetro del teléfono.
+
     </div>
 
 </div>
 
 
-<!-- DESTINO -->
+<!-- =====================================================
+     DESTINO PLEGABLE
+====================================================== -->
 
 <div class="card">
-
-    <h2>📍 Destino</h2>
-
-    <label for="destinationInput">
-        Coordenadas o enlace de Google Maps
-    </label>
-
-    <input
-        type="text"
-        id="destinationInput"
-        inputmode="text"
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="none"
-        spellcheck="false"
-        placeholder="Ej: 39.4699, -0.3763"
-    >
-
-    <div class="row">
-
-        <button
-            class="primary"
-            onclick="loadDestination()">
-            Cargar destino
-        </button>
-
-        <button
-            onclick="useCurrentLocationAsDestination()">
-            Usar posición actual
-        </button>
-
-    </div>
-
-
-    <div class="row">
-
-        <label
-            class="file-button">
-            📂 Cargar KML / XML
-            <input
-                id="kmlFile"
-                type="file"
-                accept=".kml,.xml"
-                onchange="loadKMLFile(event)">
-        </label>
-
-    </div>
-
 
     <div
-        id="destinationStatus"
-        class="destination-status">
+        class="destination-header"
+        onclick="toggleDestination()">
 
-        Sin destino seleccionado.
+        <div class="destination-title">
 
-    </div>
+            📍 Destino
 
-</div>
-
-
-<!-- BRÚJULA -->
-
-<div class="card">
-
-    <h2>🧭 Navegación</h2>
-
-    <div class="compass">
-
-        <div class="north">N</div>
-        <div class="south">S</div>
-        <div class="east">E</div>
-        <div class="west">O</div>
+        </div>
 
         <div
-            id="arrow"
-            class="compass-arrow">
-            ▲
+            id="destinationArrow"
+            class="destination-arrow">
+
+            ▼
+
         </div>
 
     </div>
 
 
-    <div class="grid">
+    <div
+        id="destinationContent"
+        class="destination-content">
+
+
+        <label for="destinationInput">
+
+            Coordenadas o enlace de Google Maps
+
+        </label>
+
+
+        <input
+            type="text"
+            id="destinationInput"
+            inputmode="text"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="none"
+            spellcheck="false"
+            placeholder="39.4699, -0.3763">
+
+
+        <div class="row">
+
+            <button
+                class="primary"
+                onclick="loadDestination()">
+
+                Cargar destino
+
+            </button>
+
+
+            <button
+                onclick="useCurrentLocationAsDestination()">
+
+                Posición actual
+
+            </button>
+
+        </div>
+
+
+        <div class="row">
+
+            <label class="file-button">
+
+                📂 Cargar KML / XML
+
+                <input
+                    id="kmlFile"
+                    type="file"
+                    accept=".kml,.xml"
+                    onchange="loadKMLFile(event)">
+
+            </label>
+
+        </div>
+
+
+        <div
+            id="destinationStatus"
+            class="destination-status">
+
+            Sin destino seleccionado.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     BRÚJULA
+====================================================== -->
+
+<div class="card">
+
+    <h2>🧭 Navegación</h2>
+
+
+    <div class="compass-container">
+
+
+        <div class="compass">
+
+
+            <!-- DISCO GIRATORIO -->
+
+            <div
+                id="compassDial"
+                class="compass-dial">
+
+
+                <div class="compass-letter compass-n">
+                    N
+                </div>
+
+                <div class="compass-letter compass-e">
+                    E
+                </div>
+
+                <div class="compass-letter compass-s">
+                    S
+                </div>
+
+                <div class="compass-letter compass-w">
+                    O
+                </div>
+
+
+                <!-- MARCAS -->
+
+                <div
+                    class="tick"
+                    style="transform:translate(-50%,0) rotate(45deg)">
+                </div>
+
+                <div
+                    class="tick"
+                    style="transform:translate(-50%,0) rotate(90deg)">
+                </div>
+
+                <div
+                    class="tick"
+                    style="transform:translate(-50%,0) rotate(135deg)">
+                </div>
+
+                <div
+                    class="tick"
+                    style="transform:translate(-50%,0) rotate(180deg)">
+                </div>
+
+                <div
+                    class="tick"
+                    style="transform:translate(-50%,0) rotate(225deg)">
+                </div>
+
+                <div
+                    class="tick"
+                    style="transform:translate(-50%,0) rotate(270deg)">
+                </div>
+
+                <div
+                    class="tick"
+                    style="transform:translate(-50%,0) rotate(315deg)">
+                </div>
+
+
+            </div>
+
+
+            <!-- FLECHA AL DESTINO -->
+
+            <div
+                id="destinationPointer"
+                class="destination-pointer">
+            </div>
+
+
+            <!-- VEHÍCULO -->
+
+            <div class="vehicle">
+
+                <div class="vehicle-front"></div>
+
+                <div class="vehicle-body">
+
+                    <div class="vehicle-window"></div>
+
+                </div>
+
+                <div class="vehicle-center"></div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="directionLabel"
+        class="direction-label">
+
+        Esperando GPS...
+
+    </div>
+
+
+    <div
+        id="directionSubtitle"
+        class="direction-subtitle">
+
+        El vehículo debe moverse para calcular el rumbo.
+
+    </div>
+
+
+    <!-- DATOS -->
+
+    <div
+        class="grid"
+        style="margin-top:15px;">
+
 
         <div class="metric">
 
@@ -411,7 +1106,9 @@ input[type="file"] {
             <span
                 id="distance"
                 class="metric-value">
+
                 —
+
             </span>
 
         </div>
@@ -426,7 +1123,9 @@ input[type="file"] {
             <span
                 id="speed"
                 class="metric-value">
+
                 —
+
             </span>
 
         </div>
@@ -441,7 +1140,9 @@ input[type="file"] {
             <span
                 id="heading"
                 class="metric-value">
+
                 —
+
             </span>
 
         </div>
@@ -456,7 +1157,9 @@ input[type="file"] {
             <span
                 id="bearing"
                 class="metric-value">
+
                 —
+
             </span>
 
         </div>
@@ -471,7 +1174,9 @@ input[type="file"] {
             <span
                 id="difference"
                 class="metric-value">
+
                 —
+
             </span>
 
         </div>
@@ -486,10 +1191,13 @@ input[type="file"] {
             <span
                 id="accuracy"
                 class="metric-value">
+
                 —
+
             </span>
 
         </div>
+
 
     </div>
 
@@ -518,7 +1226,7 @@ input[type="file"] {
             class="red"
             onclick="stopGPS()">
 
-            ■ Detener GPS
+            ■ Detener
 
         </button>
 
@@ -527,32 +1235,44 @@ input[type="file"] {
 </div>
 
 
-<!-- INFORMACIÓN -->
+<!-- =====================================================
+     INFORMACIÓN
+====================================================== -->
 
 <div class="card">
 
     <div class="info">
 
-        El rumbo se calcula comparando posiciones GPS sucesivas.
-        Por eso el vehículo debe estar desplazándose para obtener
-        un rumbo fiable.
+        🚗 El coche representado en el centro siempre apunta
+        hacia delante.
 
         <br><br>
 
-        Esta aplicación no utiliza el magnetómetro del teléfono.
+        🔴 La flecha roja apunta hacia el destino.
+
+        <br><br>
+
+        La brújula gira según el rumbo GPS del vehículo.
+        No se utiliza el magnetómetro.
+
+        <br><br>
+
+        Para obtener un rumbo fiable, el vehículo debe estar
+        desplazándose.
 
     </div>
 
 </div>
+
 
 </main>
 
 
 <script>
 
-/* ============================================================
+/* =========================================================
    VARIABLES
-============================================================ */
+========================================================= */
 
 let destination = null;
 
@@ -562,20 +1282,36 @@ let lastPosition = null;
 
 let gpsHeading = null;
 
-
-/*
-    Umbral mínimo de movimiento para calcular rumbo.
-
-    Si el GPS se mueve menos de esta distancia,
-    evitamos calcular un rumbo erróneo debido al ruido GPS.
-*/
-
 const MIN_TRAVEL_DISTANCE = 3;
 
 
-/* ============================================================
-   FUNCIONES MATEMÁTICAS
-============================================================ */
+/* =========================================================
+   DESTINO PLEGABLE
+========================================================= */
+
+function toggleDestination() {
+
+    const content =
+        document.getElementById(
+            "destinationContent"
+        );
+
+    const arrow =
+        document.getElementById(
+            "destinationArrow"
+        );
+
+
+    content.classList.toggle("open");
+
+    arrow.classList.toggle("open");
+
+}
+
+
+/* =========================================================
+   MATEMÁTICAS
+========================================================= */
 
 function radians(value) {
 
@@ -593,247 +1329,179 @@ function degrees(value) {
 
 function normalizeAngle(value) {
 
-    return ((value % 360) + 360) % 360;
+    return (
+        (value % 360) + 360
+    ) % 360;
 
 }
 
-
-/*
-    Diferencia angular entre dos ángulos.
-
-    Resultado entre -180 y +180.
-*/
 
 function angleDifference(a, b) {
 
-    return ((a - b + 540) % 360) - 180;
+    return (
+        (a - b + 540) % 360
+    ) - 180;
 
 }
 
 
-/* ============================================================
-   DISTANCIA GPS
-============================================================ */
+/* =========================================================
+   DISTANCIA
+========================================================= */
 
 function calculateDistance(point1, point2) {
 
     const R = 6371000;
 
-    const lat1 = radians(point1.lat);
-    const lat2 = radians(point2.lat);
+    const lat1 =
+        radians(point1.lat);
+
+    const lat2 =
+        radians(point2.lat);
 
     const deltaLat =
-        radians(point2.lat - point1.lat);
+        radians(
+            point2.lat -
+            point1.lat
+        );
 
     const deltaLon =
-        radians(point2.lon - point1.lon);
+        radians(
+            point2.lon -
+            point1.lon
+        );
+
 
     const a =
-        Math.sin(deltaLat / 2) *
-        Math.sin(deltaLat / 2) +
+
+        Math.sin(deltaLat / 2) ** 2 +
 
         Math.cos(lat1) *
         Math.cos(lat2) *
 
-        Math.sin(deltaLon / 2) *
-        Math.sin(deltaLon / 2);
+        Math.sin(deltaLon / 2) ** 2;
+
 
     const c =
+
         2 *
         Math.atan2(
             Math.sqrt(a),
             Math.sqrt(1 - a)
         );
 
+
     return R * c;
 
 }
 
 
-/* ============================================================
-   RUMBO ENTRE DOS PUNTOS
-============================================================ */
+/* =========================================================
+   RUMBO
+========================================================= */
 
 function calculateBearing(point1, point2) {
 
-    const lat1 = radians(point1.lat);
-    const lat2 = radians(point2.lat);
+    const lat1 =
+        radians(point1.lat);
+
+    const lat2 =
+        radians(point2.lat);
 
     const deltaLon =
-        radians(point2.lon - point1.lon);
+        radians(
+            point2.lon -
+            point1.lon
+        );
+
 
     const y =
         Math.sin(deltaLon) *
         Math.cos(lat2);
 
+
     const x =
+
         Math.cos(lat1) *
-        Math.sin(lat2) -
+        Math.sin(lat2)
+
+        -
 
         Math.sin(lat1) *
         Math.cos(lat2) *
         Math.cos(deltaLon);
 
+
     return normalizeAngle(
+
         degrees(
             Math.atan2(y, x)
         )
+
     );
 
 }
 
 
-/* ============================================================
+/* =========================================================
    FORMATO DISTANCIA
-============================================================ */
+========================================================= */
 
 function formatDistance(distance) {
 
     if (distance < 1000) {
 
-        return distance.toFixed(0) + " m";
+        return (
+            distance.toFixed(0) +
+            " m"
+        );
 
     }
 
+
     return (
+
         distance / 1000
-    ).toFixed(2) + " km";
+
+    ).toFixed(2) +
+
+    " km";
 
 }
 
 
-/* ============================================================
-   PARSER DE COORDENADAS
-============================================================ */
-
-/*
-    Esta función es la parte importante corregida.
-
-    Acepta:
-
-    39.4699, -0.3763
-
-    39.4699 -0.3763
-
-    39.4699; -0.3763
-
-    39,4699 -0,3763
-
-    Google Maps:
-
-    https://maps.google.com/?q=39.4699,-0.3763
-
-    https://www.google.com/maps/@39.4699,-0.3763,15z
-
-    https://www.google.com/maps/place/39.4699,-0.3763
-
-    etc.
-*/
-
+/* =========================================================
+   COORDENADAS
+========================================================= */
 
 function normalizeCoordinateText(text) {
 
     text = text.trim();
 
+
     /*
-        Convertimos coma decimal a punto solamente
-        cuando parece que estamos trabajando con
-        coordenadas separadas por espacios o ;
+        Permitir coma decimal en formatos
+        separados por espacio o ;
     */
 
     if (
-        text.indexOf(";") >= 0 ||
-        text.indexOf(" ") >= 0
+        text.includes(";") ||
+        text.includes(" ")
     ) {
 
-        text = text.replace(
-            /(-?\d),(\d)/g,
-            "$1.$2"
-        );
+        text =
+            text.replace(
+                /(-?\d),(\d)/g,
+                "$1.$2"
+            );
 
     }
+
 
     return text;
 
 }
 
-
-function parseCoordinatePair(text) {
-
-    text = normalizeCoordinateText(text);
-
-
-    /*
-        Formato:
-
-        39.4699, -0.3763
-    */
-
-    let match =
-        text.match(
-            /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/
-        );
-
-    if (match) {
-
-        return validateCoordinates(
-            parseFloat(match[1]),
-            parseFloat(match[2])
-        );
-
-    }
-
-
-    /*
-        Formato:
-
-        39.4699; -0.3763
-    */
-
-    match =
-        text.match(
-            /^\s*(-?\d+(?:\.\d+)?)\s*;\s*(-?\d+(?:\.\d+)?)\s*$/
-        );
-
-    if (match) {
-
-        return validateCoordinates(
-            parseFloat(match[1]),
-            parseFloat(match[2])
-        );
-
-    }
-
-
-    /*
-        Formato:
-
-        39.4699 -0.3763
-    */
-
-    match =
-        text.match(
-            /^\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*$/
-        );
-
-    if (match) {
-
-        return validateCoordinates(
-            parseFloat(match[1]),
-            parseFloat(match[2])
-        );
-
-    }
-
-
-    return null;
-
-}
-
-
-/* ============================================================
-   VALIDACIÓN
-============================================================ */
 
 function validateCoordinates(lat, lon) {
 
@@ -865,17 +1533,99 @@ function validateCoordinates(lat, lon) {
 }
 
 
-/* ============================================================
+function parseCoordinatePair(text) {
+
+    text =
+        normalizeCoordinateText(text);
+
+
+    /*
+        39.4699, -0.3763
+    */
+
+    let match =
+        text.match(
+            /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/
+        );
+
+
+    if (match) {
+
+        return validateCoordinates(
+
+            parseFloat(match[1]),
+
+            parseFloat(match[2])
+
+        );
+
+    }
+
+
+    /*
+        39.4699; -0.3763
+    */
+
+    match =
+        text.match(
+            /^\s*(-?\d+(?:\.\d+)?)\s*;\s*(-?\d+(?:\.\d+)?)\s*$/
+        );
+
+
+    if (match) {
+
+        return validateCoordinates(
+
+            parseFloat(match[1]),
+
+            parseFloat(match[2])
+
+        );
+
+    }
+
+
+    /*
+        39.4699 -0.3763
+    */
+
+    match =
+        text.match(
+            /^\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*$/
+        );
+
+
+    if (match) {
+
+        return validateCoordinates(
+
+            parseFloat(match[1]),
+
+            parseFloat(match[2])
+
+        );
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =========================================================
    GOOGLE MAPS
-============================================================ */
+========================================================= */
 
 function parseGoogleMapsURL(text) {
 
     let url;
 
+
     try {
 
-        url = new URL(text);
+        url =
+            new URL(text);
 
     }
 
@@ -886,15 +1636,13 @@ function parseGoogleMapsURL(text) {
     }
 
 
-    /*
-        ?q=
-    */
-
     const parameters = [
+
         "q",
         "query",
         "ll",
         "destination"
+
     ];
 
 
@@ -903,12 +1651,18 @@ function parseGoogleMapsURL(text) {
     ) {
 
         const value =
-            url.searchParams.get(parameter);
+            url.searchParams.get(
+                parameter
+            );
+
 
         if (value) {
 
             const coordinates =
-                parseCoordinatePair(value);
+                parseCoordinatePair(
+                    value
+                );
+
 
             if (coordinates) {
 
@@ -930,11 +1684,15 @@ function parseGoogleMapsURL(text) {
             /@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/
         );
 
+
     if (match) {
 
         return validateCoordinates(
+
             parseFloat(match[1]),
+
             parseFloat(match[2])
+
         );
 
     }
@@ -942,9 +1700,6 @@ function parseGoogleMapsURL(text) {
 
     /*
         !3dLAT!4dLON
-
-        Google Maps suele utilizar este formato
-        internamente.
     */
 
     match =
@@ -952,19 +1707,22 @@ function parseGoogleMapsURL(text) {
             /!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/
         );
 
+
     if (match) {
 
         return validateCoordinates(
+
             parseFloat(match[1]),
+
             parseFloat(match[2])
+
         );
 
     }
 
 
     /*
-        Buscar cualquier pareja de coordenadas
-        dentro del enlace.
+        Coordenadas dentro del enlace.
     */
 
     match =
@@ -972,11 +1730,15 @@ function parseGoogleMapsURL(text) {
             /(-?\d{1,3}\.\d+)\s*[,;]\s*(-?\d{1,3}\.\d+)/
         );
 
+
     if (match) {
 
         return validateCoordinates(
+
             parseFloat(match[1]),
+
             parseFloat(match[2])
+
         );
 
     }
@@ -987,13 +1749,15 @@ function parseGoogleMapsURL(text) {
 }
 
 
-/* ============================================================
-   INTERPRETAR DESTINO
-============================================================ */
+/* =========================================================
+   DESTINO
+========================================================= */
 
 function parseDestination(text) {
 
-    text = text.trim();
+    text =
+        text.trim();
+
 
     if (!text) {
 
@@ -1002,17 +1766,9 @@ function parseDestination(text) {
     }
 
 
-    /*
-        PRIMERO:
-
-        Intentamos coordenadas directas.
-
-        Esto es lo que antes estaba fallando
-        en algunos teléfonos.
-    */
-
     let coordinates =
         parseCoordinatePair(text);
+
 
     if (coordinates) {
 
@@ -1021,14 +1777,9 @@ function parseDestination(text) {
     }
 
 
-    /*
-        SEGUNDO:
-
-        Intentamos Google Maps.
-    */
-
     coordinates =
         parseGoogleMapsURL(text);
+
 
     if (coordinates) {
 
@@ -1042,16 +1793,13 @@ function parseDestination(text) {
 }
 
 
-/* ============================================================
-   CARGAR DESTINO
-============================================================ */
-
 function loadDestination() {
 
     const input =
         document.getElementById(
             "destinationInput"
         );
+
 
     const text =
         input.value.trim();
@@ -1060,7 +1808,7 @@ function loadDestination() {
     if (!text) {
 
         showDestinationError(
-            "Introduce unas coordenadas o un enlace de Google Maps."
+            "Introduce unas coordenadas o un enlace."
         );
 
         return;
@@ -1075,7 +1823,7 @@ function loadDestination() {
     if (!coordinates) {
 
         showDestinationError(
-            "No se han podido encontrar las coordenadas."
+            "No se han encontrado coordenadas."
         );
 
         return;
@@ -1091,21 +1839,20 @@ function loadDestination() {
 }
 
 
-/* ============================================================
-   ESTABLECER DESTINO
-============================================================ */
-
 function setDestination(lat, lon) {
 
     destination = {
+
         lat: lat,
         lon: lon
+
     };
 
 
     document.getElementById(
         "destinationStatus"
     ).innerHTML =
+
         "✅ Destino cargado<br>" +
 
         "<b>Lat:</b> " +
@@ -1115,6 +1862,28 @@ function setDestination(lat, lon) {
 
         "<b>Lon:</b> " +
         lon.toFixed(6);
+
+
+    /*
+        Cerramos automáticamente
+        el desplegable después de
+        cargar el destino.
+    */
+
+    const content =
+        document.getElementById(
+            "destinationContent"
+        );
+
+    const arrow =
+        document.getElementById(
+            "destinationArrow"
+        );
+
+
+    content.classList.remove("open");
+
+    arrow.classList.remove("open");
 
 
     if (lastPosition) {
@@ -1128,22 +1897,20 @@ function setDestination(lat, lon) {
 }
 
 
-/* ============================================================
-   ERROR DESTINO
-============================================================ */
-
 function showDestinationError(message) {
 
     document.getElementById(
         "destinationStatus"
     ).innerHTML =
-        "❌ " + message +
+
+        "❌ " +
+        message +
 
         "<br><br>" +
 
         "<small>" +
 
-        "Ejemplos válidos:<br>" +
+        "Ejemplos:<br>" +
 
         "39.4699, -0.3763<br>" +
 
@@ -1158,16 +1925,16 @@ function showDestinationError(message) {
 }
 
 
-/* ============================================================
-   USAR POSICIÓN ACTUAL COMO DESTINO
-============================================================ */
+/* =========================================================
+   POSICIÓN ACTUAL COMO DESTINO
+========================================================= */
 
 function useCurrentLocationAsDestination() {
 
     if (!lastPosition) {
 
         showDestinationError(
-            "Primero debes iniciar el GPS."
+            "Primero inicia el GPS."
         );
 
         return;
@@ -1176,21 +1943,25 @@ function useCurrentLocationAsDestination() {
 
 
     setDestination(
+
         lastPosition.lat,
+
         lastPosition.lon
+
     );
 
 }
 
 
-/* ============================================================
-   KML / XML
-============================================================ */
+/* =========================================================
+   KML
+========================================================= */
 
 function loadKMLFile(event) {
 
     const file =
         event.target.files[0];
+
 
     if (!file) {
 
@@ -1210,14 +1981,6 @@ function loadKMLFile(event) {
                 reader.result;
 
 
-            /*
-                Formato KML habitual:
-
-                <coordinates>
-                    LONGITUD,LATITUD,ALTITUD
-                </coordinates>
-            */
-
             let match =
                 text.match(
                     /<coordinates[^>]*>\s*(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/i
@@ -1227,18 +1990,17 @@ function loadKMLFile(event) {
             if (match) {
 
                 setDestination(
+
                     parseFloat(match[2]),
+
                     parseFloat(match[1])
+
                 );
 
                 return;
 
             }
 
-
-            /*
-                Intento genérico.
-            */
 
             match =
                 text.match(
@@ -1249,8 +2011,11 @@ function loadKMLFile(event) {
             if (match) {
 
                 setDestination(
+
                     parseFloat(match[2]),
+
                     parseFloat(match[1])
+
                 );
 
                 return;
@@ -1259,7 +2024,7 @@ function loadKMLFile(event) {
 
 
             showDestinationError(
-                "No se encontraron coordenadas en el archivo KML/XML."
+                "No se encontraron coordenadas."
             );
 
         };
@@ -1270,9 +2035,9 @@ function loadKMLFile(event) {
 }
 
 
-/* ============================================================
+/* =========================================================
    GPS
-============================================================ */
+========================================================= */
 
 function startGPS() {
 
@@ -1286,7 +2051,7 @@ function startGPS() {
     if (!navigator.geolocation) {
 
         setGPSStatus(
-            "❌ Este dispositivo no permite utilizar GPS."
+            "❌ Este dispositivo no permite GPS."
         );
 
         return;
@@ -1295,7 +2060,7 @@ function startGPS() {
 
 
     setGPSStatus(
-        "📡 Solicitando permiso para utilizar el GPS..."
+        "📡 Solicitando permiso GPS..."
     );
 
 
@@ -1307,21 +2072,19 @@ function startGPS() {
             onGPSError,
 
             {
+
                 enableHighAccuracy: true,
 
                 maximumAge: 1000,
 
                 timeout: 15000
+
             }
 
         );
 
 }
 
-
-/* ============================================================
-   DETENER GPS
-============================================================ */
 
 function stopGPS() {
 
@@ -1351,6 +2114,31 @@ function stopGPS() {
     ).textContent = "—";
 
 
+    document.getElementById(
+        "compassDial"
+    ).style.transform =
+        "rotate(0deg)";
+
+
+    document.getElementById(
+        "destinationPointer"
+    ).style.transform =
+
+        "translate(-50%, -100%) rotate(0deg)";
+
+
+    document.getElementById(
+        "directionLabel"
+    ).textContent =
+        "GPS detenido";
+
+
+    document.getElementById(
+        "directionSubtitle"
+    ).textContent =
+        "Inicia el GPS para navegar.";
+
+
     setGPSStatus(
         "GPS detenido."
     );
@@ -1358,9 +2146,9 @@ function stopGPS() {
 }
 
 
-/* ============================================================
-   POSICIÓN GPS
-============================================================ */
+/* =========================================================
+   GPS POSICIÓN
+========================================================= */
 
 function onGPSPosition(position) {
 
@@ -1383,51 +2171,50 @@ function onGPSPosition(position) {
     };
 
 
-    /*
-        Calcular rumbo comparando
-        posición anterior y posición actual.
-    */
-
     if (lastPosition) {
 
         const travelled =
             calculateDistance(
+
                 lastPosition,
+
                 current
+
             );
 
 
         const elapsed =
+
             (
                 current.time -
                 lastPosition.time
             ) / 1000;
 
 
-        /*
-            Solo calculamos rumbo si hemos
-            avanzado una distancia suficiente.
-        */
-
         if (
-            travelled >= MIN_TRAVEL_DISTANCE &&
+
+            travelled >=
+            MIN_TRAVEL_DISTANCE
+
+            &&
+
             elapsed > 0
+
         ) {
 
             const calculatedHeading =
                 calculateBearing(
+
                     lastPosition,
+
                     current
+
                 );
 
 
-            /*
-                Filtro sencillo para evitar
-                cambios bruscos producidos
-                por ruido GPS.
-            */
-
-            if (gpsHeading === null) {
+            if (
+                gpsHeading === null
+            ) {
 
                 gpsHeading =
                     calculatedHeading;
@@ -1438,15 +2225,20 @@ function onGPSPosition(position) {
 
                 const difference =
                     angleDifference(
+
                         calculatedHeading,
+
                         gpsHeading
+
                     );
 
 
                 gpsHeading =
                     normalizeAngle(
+
                         gpsHeading +
                         difference * 0.35
+
                     );
 
             }
@@ -1480,9 +2272,9 @@ function onGPSPosition(position) {
 }
 
 
-/* ============================================================
+/* =========================================================
    ERROR GPS
-============================================================ */
+========================================================= */
 
 function onGPSError(error) {
 
@@ -1503,7 +2295,7 @@ function onGPSError(error) {
         case 2:
 
             message =
-                "No se ha podido obtener la posición GPS.";
+                "No se ha podido obtener la posición.";
 
             break;
 
@@ -1511,7 +2303,7 @@ function onGPSError(error) {
         case 3:
 
             message =
-                "Tiempo de espera agotado buscando GPS.";
+                "Tiempo de espera agotado.";
 
             break;
 
@@ -1525,9 +2317,9 @@ function onGPSError(error) {
 }
 
 
-/* ============================================================
+/* =========================================================
    ACTUALIZAR NAVEGACIÓN
-============================================================ */
+========================================================= */
 
 function updateNavigation(position) {
 
@@ -1539,13 +2331,19 @@ function updateNavigation(position) {
 
 
     /*
-        Velocidad
+        VELOCIDAD
     */
 
     if (
+
         position.speed !== null &&
-        Number.isFinite(position.speed) &&
+
+        Number.isFinite(
+            position.speed
+        ) &&
+
         position.speed >= 0
+
     ) {
 
         document.getElementById(
@@ -1553,7 +2351,8 @@ function updateNavigation(position) {
         ).textContent =
 
             (
-                position.speed * 3.6
+                position.speed *
+                3.6
             ).toFixed(1) +
 
             " km/h";
@@ -1562,7 +2361,7 @@ function updateNavigation(position) {
 
 
     /*
-        Precisión
+        PRECISIÓN
     */
 
     if (
@@ -1583,10 +2382,12 @@ function updateNavigation(position) {
 
 
     /*
-        Rumbo GPS
+        RUMBO
     */
 
-    if (gpsHeading !== null) {
+    if (
+        gpsHeading !== null
+    ) {
 
         document.getElementById(
             "heading"
@@ -1599,11 +2400,6 @@ function updateNavigation(position) {
     }
 
 
-    /*
-        Si no tenemos destino,
-        terminamos aquí.
-    */
-
     if (!destination) {
 
         return;
@@ -1612,30 +2408,39 @@ function updateNavigation(position) {
 
 
     /*
-        Distancia al destino
+        DISTANCIA
     */
 
     const distance =
         calculateDistance(
+
             position,
+
             destination
+
         );
 
 
     document.getElementById(
         "distance"
     ).textContent =
-        formatDistance(distance);
+
+        formatDistance(
+            distance
+        );
 
 
     /*
-        Dirección hacia destino
+        DIRECCIÓN DESTINO
     */
 
     const targetBearing =
         calculateBearing(
+
             position,
+
             destination
+
         );
 
 
@@ -1648,78 +2453,227 @@ function updateNavigation(position) {
         "°";
 
 
-    /*
-        Rotación de la flecha.
-
-        Si el vehículo mira a 90°
-        y el destino está a 120°,
-
-        diferencia = +30°
-
-        Por tanto la flecha gira 30°
-        hacia la derecha.
-    */
-
-    if (gpsHeading !== null) {
-
-        const difference =
-            angleDifference(
-                targetBearing,
-                gpsHeading
-            );
-
+    if (
+        gpsHeading === null
+    ) {
 
         document.getElementById(
-            "difference"
+            "directionLabel"
         ).textContent =
-
-            (
-                difference >= 0
-                    ? "+"
-                    : ""
-            ) +
-
-            difference.toFixed(1) +
-
-            "°";
-
+            "Destino localizado";
 
         document.getElementById(
-            "arrow"
-        ).style.transform =
+            "directionSubtitle"
+        ).textContent =
+            "Mueve el vehículo para calcular el rumbo.";
 
-            "rotate(" +
-
-            difference +
-
-            "deg)";
+        return;
 
     }
+
+
+    /*
+        DIFERENCIA ENTRE:
+
+        rumbo del vehículo
+
+        y
+
+        dirección del destino
+    */
+
+    const difference =
+        angleDifference(
+
+            targetBearing,
+
+            gpsHeading
+
+        );
+
+
+    document.getElementById(
+        "difference"
+    ).textContent =
+
+        (
+            difference >= 0
+                ? "+"
+                : ""
+        ) +
+
+        difference.toFixed(1) +
+
+        "°";
+
+
+    /*
+        GIRAR BRÚJULA
+
+        Hacemos que el norte real
+        se coloque según el rumbo
+        del vehículo.
+
+        Así el vehículo permanece
+        apuntando siempre hacia arriba.
+    */
+
+    document.getElementById(
+        "compassDial"
+    ).style.transform =
+
+        "rotate(" +
+
+        (-gpsHeading) +
+
+        "deg)";
+
+
+    /*
+        FLECHA DESTINO
+
+        La flecha gira según la
+        diferencia entre el destino
+        y el rumbo del vehículo.
+    */
+
+    document.getElementById(
+        "destinationPointer"
+    ).style.transform =
+
+        "translate(-50%, -100%) rotate(" +
+
+        difference +
+
+        "deg)";
+
+
+    /*
+        TEXTO DESCRIPTIVO
+    */
+
+    let directionText;
+
+
+    if (
+        Math.abs(difference) < 10
+    ) {
+
+        directionText =
+            "⬆️ DESTINO AL FRENTE";
+
+    }
+
+    else if (
+        difference >= 10 &&
+        difference < 45
+    ) {
+
+        directionText =
+            "↗️ DESTINO DELANTE-DERECHA";
+
+    }
+
+    else if (
+        difference >= 45 &&
+        difference < 135
+    ) {
+
+        directionText =
+            "➡️ DESTINO A LA DERECHA";
+
+    }
+
+    else if (
+        difference >= 135
+    ) {
+
+        directionText =
+            "↘️ DESTINO DETRÁS-DERECHA";
+
+    }
+
+    else if (
+        difference <= -10 &&
+        difference > -45
+    ) {
+
+        directionText =
+            "↖️ DESTINO DELANTE-IZQUIERDA";
+
+    }
+
+    else if (
+        difference <= -45 &&
+        difference > -135
+    ) {
+
+        directionText =
+            "⬅️ DESTINO A LA IZQUIERDA";
+
+    }
+
+    else {
+
+        directionText =
+            "↙️ DESTINO DETRÁS-IZQUIERDA";
+
+    }
+
+
+    document.getElementById(
+        "directionLabel"
+    ).textContent =
+        directionText;
+
+
+    document.getElementById(
+        "directionSubtitle"
+    ).textContent =
+
+        "Gira " +
+
+        Math.abs(
+            difference
+        ).toFixed(0) +
+
+        "° " +
+
+        (
+            difference >= 0
+                ? "a la derecha"
+                : "a la izquierda"
+        );
 
 }
 
 
-/* ============================================================
+/* =========================================================
    ESTADO GPS
-============================================================ */
+========================================================= */
 
 function setGPSStatus(message) {
 
     document.getElementById(
         "gpsStatus"
-    ).textContent = message;
+    ).textContent =
+        message;
 
 }
 
 
-/* ============================================================
-   ENTER EN EL CAMPO DE DESTINO
-============================================================ */
+/* =========================================================
+   ENTER EN DESTINO
+========================================================= */
 
 document
-    .getElementById("destinationInput")
+    .getElementById(
+        "destinationInput"
+    )
     .addEventListener(
+
         "keydown",
+
         function(event) {
 
             if (
@@ -1733,10 +2687,12 @@ document
             }
 
         }
+
     );
 
 </script>
 
 </body>
+
 </html>
 ```
